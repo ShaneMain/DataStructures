@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 
-static int ARRAY_START_SZ = 8;
+static int ARRAY_START_SZ = 1;
 static int ARRAY_GROWTH_FACTOR = 2;
 
 class GrowableArray {
@@ -15,11 +15,6 @@ public:
         data = (int*)malloc(sizeof(int) * ARRAY_START_SZ);
         arraySize = 0;
         capacity = ARRAY_START_SZ;
-        for (int i = 0; i < 8; ++i) {
-            (data)[i] = i;
-            arraySize +=1;
-        }
-
         std::cout << std::endl;
     }
 
@@ -34,11 +29,15 @@ public:
     }
 
     void insert(int num, int index) {
-        capacity += 1;
+        if(index > arraySize){
+            return;
+        }
+        arraySize += 1;
+        checkAndEnlarge();
         int *newArray = (int *) malloc(sizeof(int) * capacity);
         int newSize = 0;
         bool passedIndex = false;
-        for(int i = 0; i < capacity; i++ ){
+        for(int i = 0; i < arraySize; i++ ){
 
             if(passedIndex){
                 newArray[i] = data[i - 1];
@@ -56,7 +55,6 @@ public:
             }
         }
         data = newArray;
-        arraySize = newSize;
         //free(data);
     }
 
@@ -73,37 +71,25 @@ public:
         }
 
     int pop(){
-        int newSize = 0;
-        int *newArray = (int *) malloc(sizeof(int) * capacity);
-        for(int i = 0; i < capacity; i++ ){
-            if(i < arraySize - 1){
-                newArray[i] = data[i];
-                newSize += 1;
-            }
-            else{
-                int lastNum = data[i];
-                data = newArray;
-                arraySize = newSize;
-                return lastNum;
-            }
-        }
+        arraySize -= 1;
+        return data[arraySize];
     }
 
     void push(int value){
-        int newSize = 0;
-        capacity += 1;
-        int *newArray = (int *) malloc(sizeof(int) * capacity);
-        for(int i = 0; i < capacity; i++ ){
-            if(i < arraySize) {
+        arraySize += 1;
+        checkAndEnlarge();
+        data[arraySize - 1] = value;
+    }
+
+    private: void checkAndEnlarge(){
+        while(arraySize > capacity){
+            int newCapacity = capacity * 2;
+            int *newArray = (int *) malloc(sizeof(int) * newCapacity);
+            for(int i = 0; i < capacity; i++ ){
                 newArray[i] = data[i];
-                newSize += 1;
-            } else {
-                newArray[i] = value;
-                newSize +=1 ;
-                data = newArray;
-                arraySize = newSize;
-                break;
             }
+            data = newArray;
+            capacity = newCapacity;
         }
     }
 };
@@ -111,14 +97,17 @@ public:
 
 int main() {
     GrowableArray arr;
+    for (int i = 1; i < 8; ++i) {
+        arr.push(i);
+    }
     std::cout << arr.contains(1) << std::endl;
     std::cout << arr.lookup(2);
     arr.print();
-    arr.insert(50, 4);
+    arr.insert(50, 0);
     arr.print();
     std::cout << "\n";
     std::cout << arr.pop();
     arr.print();
-    arr.push(1);
+    arr.push(50);
     arr.print();
 }
