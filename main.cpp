@@ -20,7 +20,6 @@ public:
 
     bool contains(unsigned int num) {
         for(int i = 0; i < arraySize; i++ ){
-
             if(data[i] == num){
                 return true;
             }
@@ -96,11 +95,12 @@ public:
 int main() {
     GrowableArray arr;
     arr.pop();
+    std::cout << arr.contains(0) << std::endl;
     for (int i = 1; i < 8; ++i) {
         arr.push(i);
     }
     std::cout << arr.contains(1) << std::endl;
-    std::cout << arr.lookup(2);
+    std::cout << arr.lookup(2) << std::endl;
     std::cout << arr.lookup(6);
     arr.print();
     arr.insert(50, 0);
