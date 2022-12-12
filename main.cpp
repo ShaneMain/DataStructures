@@ -6,21 +6,21 @@ static int ARRAY_GROWTH_FACTOR = 2;
 
 class GrowableArray {
 private:
-    int* data;
+    int *data;
     int arraySize;
     int capacity;
 
 public:
     GrowableArray() {
-        data = (int*)malloc(sizeof(int) * ARRAY_START_SZ);
+        data = (int *) malloc(sizeof(int) * ARRAY_START_SZ);
         arraySize = 0;
         capacity = ARRAY_START_SZ;
         std::cout << std::endl;
     }
 
-    bool contains(unsigned int num) {
-        for(int i = 0; i < arraySize; i++ ){
-            if(data[i] == num){
+    bool contains(int num) {
+        for (int i = 0; i < arraySize; i++) {
+            if (data[i] == num) {
                 return true;
             }
         }
@@ -28,60 +28,61 @@ public:
     }
 
     void insert(int num, unsigned int index) {
-        lookup(index);
+        checkIndex(index);
         arraySize += 1;
         checkAndEnlarge();
-        bool passedIndex = false;
-        int storedValue;
-        int nextStoredValue;
-        for(int i = 0; i < arraySize; i++ ) {
-            if(passedIndex){
-                nextStoredValue = data[i];
-                data[i] = storedValue;
-                storedValue = nextStoredValue;
-            }
-            if (i == index) {
-                storedValue = data[i];
+        for (int i = arraySize - 1; i-- > 0;) {
+            if (i != index) {
+                data[i + 1] = data[i];
+            } else {
+                data[i + 1] = data[i];
                 data[i] = num;
-                passedIndex = true;
+                return;
             }
         }
     }
 
     int lookup(unsigned int index) {
-        if(index <= arraySize-1) {
-            return data[index];
-        } else {
-            throw std::invalid_argument( "Invalid Index");
-        }
-     }
+        checkIndex(index);
+        return data[index];
+    }
 
-    void print(){
+    void print() {
         std::cout << "\n";
 
-        for(int i = 0; i < arraySize; i++ ){
+        for (int i = 0; i < arraySize; i++) {
             std::cout << data[i] << " ";
-            }
         }
+    }
 
-    int pop(){
-        if(arraySize > 0){
+    int pop() {
+        if (arraySize > 0) {
             arraySize -= 1;
             return data[arraySize];
         }
     }
 
-    void push(int value){
+    void push(int value) {
         arraySize += 1;
         checkAndEnlarge();
         data[arraySize - 1] = value;
     }
 
-    private: void checkAndEnlarge(){
-        while(arraySize > capacity){
+private:
+    void checkIndex(int index) {
+        if (index <= arraySize - 1) {
+            return;
+        } else {
+            throw std::invalid_argument("Invalid Index");
+        }
+    }
+
+private:
+    void checkAndEnlarge() {
+        while (arraySize > capacity) {
             int newCapacity = capacity * 2;
             int *newArray = (int *) malloc(sizeof(int) * newCapacity);
-            for(int i = 0; i < arraySize; i++ ){
+            for (int i = 0; i < arraySize; i++) {
                 newArray[i] = data[i];
             }
             free(data); //not sure if this fixes the memory leak
