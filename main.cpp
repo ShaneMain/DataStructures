@@ -18,6 +18,11 @@ public:
         std::cout << std::endl;
     }
 
+    ~GrowableArray() {
+        free(data);
+        data = nullptr;
+    }
+
     bool contains(int num) {
         for (int i = 0; i < arraySize; i++) {
             if (data[i] == num) {
@@ -66,6 +71,10 @@ public:
         arraySize += 1;
         checkAndEnlarge();
         data[arraySize - 1] = value;
+         if (arraySize == 0) {
+            free(data);
+            data = nullptr;
+        }
     }
 
 private:
@@ -79,17 +88,22 @@ private:
 
 private:
     void checkAndEnlarge() {
-        while (arraySize > capacity) {
-            int newCapacity = capacity * 2;
-            int *newArray = (int *) malloc(sizeof(int) * newCapacity);
-            for (int i = 0; i < arraySize; i++) {
-                newArray[i] = data[i];
-            }
-            free(data); //not sure if this fixes the memory leak
-            data = newArray;
-            capacity = newCapacity;
+        if (arraySize <= capacity) {
+            return;
         }
+        int newCapacity = capacity * 2;
+        int *newArray = (int *) malloc(sizeof(int) * newCapacity);
+        if (!newArray) {
+            return;
+        }
+        for (int i = 0; i < arraySize; i++) {
+            newArray[i] = data[i];
+        }
+        free(data);
+        data = newArray;
+        capacity = newCapacity;
     }
+
 };
 
 
